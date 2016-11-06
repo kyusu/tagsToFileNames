@@ -1,0 +1,28 @@
+{
+  "name": "tagstofilenames",
+  "version": "0.0.1",
+  "description": "Adds/removes the given tags to/from the file names in the given directory",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyusu/addTagsToFileNames.git"
+  },
+  "bin": {
+    "tagsToFileNames": "./index.js"
+  },
+  "author": "kyusu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kyusu/addTagsToFileNames/issues"
+  },
+  "homepage": "https://github.com/kyusu/addTagsToFileNames",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "commander": "^2.9.0",
+    "junk": "^2.0.0",
+    "ramda": "^0.22.1"
+  }
+}
