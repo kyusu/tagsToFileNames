@@ -159,17 +159,27 @@ const renameFileOnFilesystem = fileInfo => {
 };
 
 /**
+ * Returns a Just containing the file info object or Nothing if the file is not fit to be processed (it is a directory,
+ * junk, ..)
+ * @param {string} fileName
+ * @returns {Just.<{extName: string, baseName: string, tags: Array.<string>}>|Nothing}
+ */
+const getFileInfo = fileName => {
+    return filterOutJunkFile(fileName)
+        .chain(getFileStat)
+        .chain(filterOutDirectory)
+        .map(removeStat)
+        .map(getFileDescription);
+};
+
+/**
  * Takes a file name and a function which either adds or removes tags from the given file name and performs a
  * file rename operation on the given file
  * @param {Function} changeFunc
  * @param {string} fileName
  */
 const changeFileTags = (changeFunc, fileName) => {
-    const fileInfo = filterOutJunkFile(fileName)
-        .chain(getFileStat)
-        .chain(filterOutDirectory)
-        .map(removeStat)
-        .map(getFileDescription)
+    const fileInfo = getFileInfo(fileName)
         .map(normalizeBaseName)
         .map(changeFunc)
         .map(getNewFileName);
@@ -184,8 +194,33 @@ const changeFileTags = (changeFunc, fileName) => {
     }
 };
 
+/**
+ * Whether the given tag array of the file contains all tags from the filter array
+ * @param {Array.<string>} filterTags
+ * @param {Array.<string>} fileTags
+ * @returns {boolean}
+ */
+const containsTags = (filterTags, fileTags) => {
+    return R.reduce((acc, tag) => {
+        return acc && fileTags.indexOf(tag) !== -1;
+    }, true, filterTags);
+};
+
+/**
+ * Returns whether the given file contains the given tags or not
+ * @param {Array.<string>} filterTags An array of tags which have be contained in file
+ * @param {string} fileName The name of the file which is tested
+ */
+const fileSatisfiesFilter = (filterTags, fileName) => {
+    const result = getFileInfo(fileName)
+        .map(R.view(R.lensProp('tags')))
+        .map(containsTags.bind(null, filterTags));
+    return result.getOrElse(false);
+};
+
 module.exports = {
     addNewTagsToOldOnes: addNewTagsToOldOnes,
     removeTagsFromOldOnes: removeTagsFromOldOnes,
-    changeFileTags: changeFileTags
+    changeFileTags: changeFileTags,
+    fileSatisfiesFilter: fileSatisfiesFilter
 };
