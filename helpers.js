@@ -97,13 +97,6 @@ const getFileStat = fileName => {
 };
 
 /**
- * Returns just the file name
- * @param {{fileName: string, stat: object}} fileInfo
- * @returns {string}
- */
-const removeStat = fileInfo => fileInfo.fileName;
-
-/**
  * Returns an object which describes the given file including the associated tags
  * @param  {string} fileName
  * @returns {{extName: string, baseName: string, tags: Array.<string>}}
@@ -168,7 +161,7 @@ const getFileInfo = fileName => {
     return filterOutJunkFile(fileName)
         .chain(getFileStat)
         .chain(filterOutDirectory)
-        .map(removeStat)
+        .map(R.view(R.lensProp('fileName')))
         .map(getFileDescription);
 };
 
