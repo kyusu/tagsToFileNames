@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+const program = require('commander');
+const ll = require('lazylines');
+const helpers = require('./helpers.js');
+
+program.parse(process.argv);
+const tagsToBeAdded = program.args[0].split(',').map(tag => tag.trim());
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+const inp = new ll.LineReadStream(process.stdin);
+inp.on('line', (line) => {
+    const fileName = ll.chomp(line);
+    helpers.changeFileTags(helpers.addNewTagsToOldOnes.bind(null, tagsToBeAdded), fileName);
+});
