@@ -71,3 +71,7 @@ which will result in
     -rw-r--r--   1 kyusu  staff    0 30 Okt 15:12 212491440.[foo bar].jpg
     -rw-r--r--   1 kyusu  staff    0 30 Okt 15:12 552716224.[foo bar].jpg
     -rw-r--r--   1 kyusu  staff    0 30 Okt 15:12 592280349.[foo bar].jpg
+    
+## License
+
+  [MIT](LICENSE)
