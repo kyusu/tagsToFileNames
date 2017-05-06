@@ -93,15 +93,23 @@ If you're directory looks like this
     -rw-r--r--   1 kyusu  staff    0 30 Okt 15:12 212491440.[foo].jpg
     -rw-r--r--   1 kyusu  staff    0 30 Okt 15:12 552716224.[foo].jpg
     -rw-r--r--   1 kyusu  staff    0 30 Okt 15:12 592280349.[foo].jpg
- 
+
  and you want to work with all files which are tagged with **bar** you can run
- 
+
  ```bash
      $ ls | tagsToFileNames filter bar
  ```
- 
+
  which will print only these files which are tagged with **bar**.
- 
+
+ #### Adding tags to subdirectories
+
+ If you want to add tags to files in subdirectories you can do so using `find`
+
+ ```bash
+    $ find . | tagsToFileNames add foo
+ ```
+
 ## License
 
   [MIT](LICENSE)
