@@ -11,24 +11,57 @@ const Left = Either.Left;
 const Right = Either.Right;
 
 /**
+ * @typedef {Array.<string>} tags
+ */
+
+/**
+ * @typedef {Object} fileInfo
+ * @property {string} extName
+ * @property {string} baseName
+ * @property {string} dirName
+ * @property {tags} tags
+ */
+
+/**
+ * @typedef {Object} enhancedFileInfo
+ * @property {string} extName
+ * @property {string} baseName
+ * @property {string} dirName
+ * @property {tags} tags
+ * @property {string} normalizedBaseName
+ */
+
+/**
+ * @typedef {Object} renamedFileInfo
+ * @property {string} extName
+ * @property {string} baseName
+ * @property {string} dirName
+ * @property {tags} tags
+ * @property {string} normalizedBaseName
+ * @property {string} newBaseName
+ */
+
+/**
  * Given a file name it returns an object which contains the base and extension name of the file
  * @param {string} fileName
- * @returns {{extName: string, baseName: string}}
+ * @returns {{extName: string, baseName: string, dirName: string}}
  */
 const getExtAndBaseName = fileName => {
     const extName = path.extname(fileName);
     const baseName = path.basename(fileName, extName);
+    const dirName = path.dirname(fileName);
     return {
-        extName: extName,
-        baseName: baseName
+        extName,
+        baseName,
+        dirName
     };
 };
 
 /**
- * Returns an object which contains the base and extension name of the file as well as all the tags stored in the file
+ * Returns an object which contains file information as well as all the tags stored in the file
  * name
  * @param {{extName: string, baseName: string}} fileInfo
- * @returns {{extName: string, baseName: string, tags: Array.<string>}}
+ * @returns {fileInfo}
  */
 const getTags = fileInfo => {
     let tags = [];
@@ -41,14 +74,14 @@ const getTags = fileInfo => {
 
 /**
  * Given an array of tags it returns a string containing all tags separated by a whitespace
- * @param {Array.<string>} tags
+ * @param {tags} tags
  * @returns string
  */
 const getConcatenatedTags = tags => `.[${tags.join(' ')}]`;
 
 /**
  * Returns an object which contains extension and base name, tags as well as the base name of the file without the tags
- * @param {{extName: string, baseName: string, tags: Array.<string>}} fileInfo
+ * @param {fileInfo} fileInfo
  * @returns {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string}}
  */
 const normalizeBaseName = fileInfo => {
@@ -99,15 +132,15 @@ const getFileStat = fileName => {
 /**
  * Returns an object which describes the given file including the associated tags
  * @param  {string} fileName
- * @returns {{extName: string, baseName: string, tags: Array.<string>}}
+ * @returns {fileInfo}
  */
 const getFileDescription = R.compose(getTags, getExtAndBaseName);
 
 /**
  * Takes a list of new tags and merges them with the tags which are already present on this file
- * @param {Array.<string>} newTags
- * @param {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string}} fileInfo
- * @returns {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string}}
+ * @param {tags} newTags
+ * @param {enhancedFileInfo} fileInfo
+ * @returns {enhancedFileInfo}
  */
 const addNewTagsToOldOnes = (newTags, fileInfo) => {
     const tags = R.uniq(R.concat(fileInfo.tags, newTags));
@@ -117,9 +150,9 @@ const addNewTagsToOldOnes = (newTags, fileInfo) => {
 /**
  * Takes a list of tags which have to removed and returns a file info object which no longer contains these tags in
  * it's tags property
- * @param {Array.<string>} tagsToBeRemoved
- * @param {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string}} fileInfo
- * @returns {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string}}
+ * @param {tags} tagsToBeRemoved
+ * @param {enhancedFileInfo} fileInfo
+ * @returns {enhancedFileInfo}
  */
 const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
     const tags = R.without(tagsToBeRemoved, fileInfo.tags);
@@ -128,8 +161,8 @@ const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
 
 /**
  * Takes a file info object and returns an object which contains the new base name which includes all tags
- * @param {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string}} fileInfo
- * @returns {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string, newBaseName: string}}
+ * @param {enhancedFileInfo} fileInfo
+ * @returns {renamedFileInfo}
  */
 const getNewFileName = fileInfo => {
     const newBaseName = `${fileInfo.normalizedBaseName}${getConcatenatedTags(fileInfo.tags)}`;
@@ -139,12 +172,15 @@ const getNewFileName = fileInfo => {
 /**
  * Takes a file info object and tries to perform a rename operation on the given file. Returns a Left containing the
  * error which has occurred or a Right which contains the new file name
- * @param {{extName: string, baseName: string, tags: Array.<string>, normalizedBaseName: string, newBaseName: string}} fileInfo
+ * @param {renamedFileInfo} fileInfo
  * @returns {Left.<Error>|Right.<string>}
  */
 const renameFileOnFilesystem = fileInfo => {
     try {
-        fs.renameSync(`${fileInfo.baseName}${fileInfo.extName}`, `${fileInfo.newBaseName}${fileInfo.extName}`);
+        fs.renameSync(
+            `${fileInfo.dirName}${path.sep}${fileInfo.baseName}${fileInfo.extName}`,
+            `${fileInfo.dirName}${path.sep}${fileInfo.newBaseName}${fileInfo.extName}`
+        );
     } catch (e) {
         return Left(e);
     }
@@ -155,7 +191,7 @@ const renameFileOnFilesystem = fileInfo => {
  * Returns a Just containing the file info object or Nothing if the file is not fit to be processed (it is a directory,
  * junk, ..)
  * @param {string} fileName
- * @returns {Just.<{extName: string, baseName: string, tags: Array.<string>}>|Nothing}
+ * @returns {Just.<{fileInfo}>|Nothing}
  */
 const getFileInfo = fileName => {
     return filterOutJunkFile(fileName)
@@ -189,8 +225,8 @@ const changeFileTags = (changeFunc, fileName) => {
 
 /**
  * Whether the given tag array of the file contains all tags from the filter array
- * @param {Array.<string>} filterTags
- * @param {Array.<string>} fileTags
+ * @param {tags} filterTags
+ * @param {tags} fileTags
  * @returns {boolean}
  */
 const containsTags = (filterTags, fileTags) => {
@@ -201,7 +237,7 @@ const containsTags = (filterTags, fileTags) => {
 
 /**
  * Returns whether the given file contains the given tags or not
- * @param {Array.<string>} filterTags An array of tags which have be contained in file
+ * @param {tags} filterTags An array of tags which have be contained in file
  * @param {string} fileName The name of the file which is tested
  */
 const fileSatisfiesFilter = (filterTags, fileName) => {
