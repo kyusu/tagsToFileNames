@@ -4,7 +4,7 @@
   "description": "Adds/removes the given tags to/from the file names in the given directory",
   "main": "tagsToFileNames.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,11 +20,14 @@
   },
   "homepage": "https://github.com/kyusu/addTagsToFileNames",
   "dependencies": {
-    "bluebird": "^3.4.6",
-    "commander": "^2.9.0",
-    "junk": "^2.0.0",
+    "bluebird": "^3.5.1",
+    "commander": "^2.12.2",
+    "junk": "^2.1.0",
     "lazylines": "^1.0.0",
     "ramda": "^0.22.1",
     "ramda-fantasy": "^0.7.0"
+  },
+  "devDependencies": {
+    "jest": "^22.0.4"
   }
 }
