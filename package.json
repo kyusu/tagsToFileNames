@@ -4,7 +4,7 @@
   "description": "Adds/removes the given tags to/from the file names in the given directory",
   "main": "tagsToFileNames.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
