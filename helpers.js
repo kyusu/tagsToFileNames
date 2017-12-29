@@ -214,6 +214,13 @@ const renameFileOnFilesystem = fileInfo => {
 };
 
 /**
+ * @type {Function}
+ * @param {{stat: object, fileName: string}} file
+ * @return {string}
+ */
+const viewFileName = R.view(R.lensProp('fileName'));
+
+/**
  * Returns a Just containing the file info object or Nothing if the file is not fit to be processed (it is a directory,
  * junk, ..)
  * @param {string} fileName
@@ -223,7 +230,7 @@ const getFileInfo = fileName => {
     return filterOutJunkFile(fileName)
         .chain(getFileStat)
         .chain(filterOutDirectory)
-        .map(R.view(R.lensProp('fileName')))
+        .map(viewFileName)
         .map(getFileDescription);
 };
 
@@ -263,13 +270,20 @@ const containsTags = (filterTags, fileTags) => {
 };
 
 /**
+ * @type {Function}
+ * @param {FileInfoWithTags} fileInfo
+ * @return {Tags}
+ */
+const viewTags = R.view(R.lensProp('tags'));
+
+/**
  * Returns whether the given file contains the given tags or not
  * @param {Tags} filterTags An array of tags which have be contained in file
  * @param {string} fileName The name of the file which is tested
  */
 const fileSatisfiesFilter = (filterTags, fileName) => {
     const result = getFileInfo(fileName)
-        .map(R.view(R.lensProp('tags')))
+        .map(viewTags)
         .map(containsTags.bind(null, filterTags));
     return result.getOrElse(false);
 };
