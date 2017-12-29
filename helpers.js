@@ -72,6 +72,14 @@ const getExtAndBaseName = fileName => {
 const removeEmptyTags = R.reject(R.isEmpty);
 
 /**
+ * @type {Function}
+ * @param {Tags} tags
+ * @param {FileInfo} fileInfo
+ * @return {FileInfoWithTags}
+ */
+const assocTags = R.assoc('tags');
+
+/**
  * Returns an object which contains file information as well as all the tags stored in the file
  * name
  * @nosideeffects
@@ -84,7 +92,7 @@ const getTags = fileInfo => {
     if (matches) {
         tags = removeEmptyTags(matches[1].replace('.[', '').replace('].', '').split(' '));
     }
-    return Object.assign({tags: tags}, fileInfo);
+    return assocTags(tags, fileInfo);
 };
 
 /**
@@ -107,6 +115,7 @@ const removeBaseName = R.dissoc('baseName');
 
 /**
  * @type {Function}
+ * @param {String} normalizedBaseName
  * @param {FileInfoWithTags} fileInfo
  * @return {EnhancedFileInfo}
  */
@@ -178,6 +187,13 @@ const getFileDescription = R.compose(getTags, getExtAndBaseName);
 const mergeTags = R.compose(R.uniq, R.concat);
 
 /**
+ * @type {Function}
+ * @param {EnhancedFileInfo} fileInfo
+ * @return {EnhancedFileInfo}
+ */
+const setTags = R.set(R.lensProp('tags'));
+
+/**
  * Takes a list of new tags and merges them with the tags which are already present on this file
  * @param {Tags} newTags
  * @param {EnhancedFileInfo} fileInfo
@@ -185,7 +201,7 @@ const mergeTags = R.compose(R.uniq, R.concat);
  */
 const addNewTagsToOldOnes = (newTags, fileInfo) => {
     const tags = mergeTags(fileInfo.tags, newTags);
-    return Object.assign({}, fileInfo, {tags: tags});
+    return setTags(tags, fileInfo);
 };
 
 /**
@@ -197,8 +213,15 @@ const addNewTagsToOldOnes = (newTags, fileInfo) => {
  */
 const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
     const tags = R.without(tagsToBeRemoved, fileInfo.tags);
-    return Object.assign({}, fileInfo, {tags: tags});
+    return setTags(tags, fileInfo);
 };
+
+/**
+ * @type {Function}
+ * @param {EnhancedFileInfo} fileInfo
+ * @return {RenamedFileInfo}
+ */
+const assocNewBaseName = R.assoc('newBaseName');
 
 /**
  * Takes a file info object and returns an object which contains the new base name which includes all tags
@@ -208,7 +231,7 @@ const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
 const getNewFileName = fileInfo => {
     const tags = fileInfo.tags.length ? getConcatenatedTags(fileInfo.tags) : '';
     const newBaseName = `${fileInfo.normalizedBaseName}${tags}`;
-    return Object.assign({newBaseName}, fileInfo);
+    return assocNewBaseName(newBaseName, fileInfo);
 };
 
 /**
