@@ -20,11 +20,10 @@
   },
   "homepage": "https://github.com/kyusu/addTagsToFileNames",
   "dependencies": {
-    "bluebird": "^3.5.1",
     "commander": "^2.12.2",
     "junk": "^2.1.0",
     "lazylines": "^1.0.0",
-    "ramda": "^0.22.1",
+    "ramda": "^0.25.0",
     "ramda-fantasy": "^0.7.0"
   },
   "devDependencies": {
