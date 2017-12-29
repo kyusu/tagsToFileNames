@@ -173,7 +173,8 @@ const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
  * @returns {RenamedFileInfo}
  */
 const getNewFileName = fileInfo => {
-    const newBaseName = `${fileInfo.normalizedBaseName}${getConcatenatedTags(fileInfo.tags)}`;
+    const tags = fileInfo.tags.length ? getConcatenatedTags(fileInfo.tags) : '';
+    const newBaseName = `${fileInfo.normalizedBaseName}${tags}`;
     return Object.assign({newBaseName}, fileInfo);
 };
 
