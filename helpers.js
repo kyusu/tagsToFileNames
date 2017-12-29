@@ -188,6 +188,7 @@ const mergeTags = R.compose(R.uniq, R.concat);
 
 /**
  * @type {Function}
+ * @nosideeffects
  * @param {EnhancedFileInfo} fileInfo
  * @return {EnhancedFileInfo}
  */
@@ -195,6 +196,7 @@ const setTags = R.set(R.lensProp('tags'));
 
 /**
  * Takes a list of new tags and merges them with the tags which are already present on this file
+ * @nosideeffects
  * @param {Tags} newTags
  * @param {EnhancedFileInfo} fileInfo
  * @returns {EnhancedFileInfo}
@@ -207,6 +209,7 @@ const addNewTagsToOldOnes = (newTags, fileInfo) => {
 /**
  * Takes a list of tags which have to removed and returns a file info object which no longer contains these tags in
  * it's tags property
+ * @nosideeffects
  * @param {Tags} tagsToBeRemoved
  * @param {EnhancedFileInfo} fileInfo
  * @returns {EnhancedFileInfo}
@@ -218,6 +221,7 @@ const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
 
 /**
  * @type {Function}
+ * @nosideeffects
  * @param {EnhancedFileInfo} fileInfo
  * @return {RenamedFileInfo}
  */
@@ -225,6 +229,7 @@ const assocNewBaseName = R.assoc('newBaseName');
 
 /**
  * Takes a file info object and returns an object which contains the new base name which includes all tags
+ * @nosideeffects
  * @param {EnhancedFileInfo} fileInfo
  * @returns {RenamedFileInfo}
  */
@@ -254,6 +259,7 @@ const renameFileOnFilesystem = fileInfo => {
 
 /**
  * @type {Function}
+ * @nosideeffects
  * @param {{stat: object, fileName: string}} file
  * @return {string}
  */
@@ -265,13 +271,11 @@ const viewFileName = R.view(R.lensProp('fileName'));
  * @param {string} fileName
  * @returns {Just.<{FileInfoWithTags}>|Nothing}
  */
-const getFileInfo = fileName => {
-    return filterOutJunkFile(fileName)
-        .chain(getFileStat)
-        .chain(filterOutDirectory)
-        .map(viewFileName)
-        .map(getFileDescription);
-};
+const getFileInfo = fileName => filterOutJunkFile(fileName)
+    .chain(getFileStat)
+    .chain(filterOutDirectory)
+    .map(viewFileName)
+    .map(getFileDescription);
 
 /**
  * Takes a file name and a function which either adds or removes tags from the given file name and performs a
@@ -302,14 +306,12 @@ const changeFileTags = (changeFunc, fileName) => {
  * @param {Tags} fileTags
  * @returns {boolean}
  */
-const containsTags = (filterTags, fileTags) => {
-    return R.reduce((acc, tag) => {
-        return acc && fileTags.indexOf(tag) !== -1;
-    }, true, filterTags);
-};
+const containsTags = (filterTags, fileTags) => R.reduce((acc, tag) => acc && fileTags.indexOf(tag) !== -1, true,
+    filterTags);
 
 /**
  * @type {Function}
+ * @nosideeffects
  * @param {FileInfoWithTags} fileInfo
  * @return {Tags}
  */
@@ -320,12 +322,10 @@ const viewTags = R.view(R.lensProp('tags'));
  * @param {Tags} filterTags An array of tags which have be contained in file
  * @param {string} fileName The name of the file which is tested
  */
-const fileSatisfiesFilter = (filterTags, fileName) => {
-    const result = getFileInfo(fileName)
-        .map(viewTags)
-        .map(containsTags.bind(null, filterTags));
-    return result.getOrElse(false);
-};
+const fileSatisfiesFilter = (filterTags, fileName) => getFileInfo(fileName)
+    .map(viewTags)
+    .map(containsTags.bind(null, filterTags))
+    .getOrElse(false);
 
 module.exports = {
     addNewTagsToOldOnes,
