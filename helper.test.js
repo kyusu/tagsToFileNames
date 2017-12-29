@@ -1,3 +1,4 @@
+const R = require('ramda');
 const {
     getExtAndBaseName,
     getTags,
@@ -141,6 +142,13 @@ describe('getConcatenatedTags', () => {
 });
 
 describe('normalizedBaseName', () => {
+    const checkNormalizedFileInfoResult = (expectedResult, actualResult) => {
+        expect(R.keys(actualResult).sort()).toEqual(['dirName', 'extName', 'normalizedBaseName', 'tags']);
+        expect(actualResult).toBeDefined();
+        expect(actualResult.extName).toEqual(expectedResult.extName);
+        expect(actualResult.dirName).toEqual(expectedResult.dirName);
+        expect(actualResult.tags).toEqual(expectedResult.tags);
+    };
     it('should strips away the tags given a file with tags', () => {
         const fileInfo = {
             extName: '.js',
@@ -149,7 +157,7 @@ describe('normalizedBaseName', () => {
             tags: ['test', 'unit-test', 'jest']
         };
         const result = normalizeBaseName(fileInfo);
-        checkFileInfoResult(fileInfo, result);
+        checkNormalizedFileInfoResult(fileInfo, result);
         expect(result.normalizedBaseName).toEqual('helper.test');
     });
 
@@ -161,7 +169,7 @@ describe('normalizedBaseName', () => {
             tags: []
         };
         const result = normalizeBaseName(fileInfo);
-        checkFileInfoResult(fileInfo, result);
+        checkNormalizedFileInfoResult(fileInfo, result);
         expect(result.normalizedBaseName).toEqual(fileInfo.baseName);
     });
 
@@ -173,7 +181,7 @@ describe('normalizedBaseName', () => {
             tags: []
         };
         const result = normalizeBaseName(fileInfo);
-        checkFileInfoResult(fileInfo, result);
+        checkNormalizedFileInfoResult(fileInfo, result);
         expect(result.normalizedBaseName).toEqual(fileInfo.baseName);
     });
 });
@@ -182,7 +190,6 @@ describe('addNewTagsToOldOne', () => {
     it('should merge new and old tags', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test.[test unit-test jest]',
             dirName: '.',
             tags: ['test', 'unit-test', 'jest'],
             normalizedBaseName: 'helper.test'
@@ -196,7 +203,6 @@ describe('addNewTagsToOldOne', () => {
     it('should new tags to a file which has none', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test',
             dirName: '.',
             tags: [],
             normalizedBaseName: 'helper.test'
@@ -210,7 +216,6 @@ describe('addNewTagsToOldOne', () => {
     it('should handle empty new tags', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test.[test unit-test jest]',
             dirName: '.',
             tags: ['test', 'unit-test', 'jest'],
             normalizedBaseName: 'helper.test'
@@ -226,7 +231,6 @@ describe('removeTagsFromOldOnes', () => {
     it('should remove the given tags', () => {
         const  fileInfo = {
             extName: '.js',
-            baseName: 'helper.test.[test unit-test jest]',
             dirName: '.',
             tags: ['test', 'unit-test', 'jest'],
             normalizedBaseName: 'helper.test'
@@ -240,7 +244,6 @@ describe('removeTagsFromOldOnes', () => {
     it('should handle removing non-existing tags', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test.[test unit-test jest]',
             dirName: '.',
             tags: ['test', 'unit-test', 'jest'],
             normalizedBaseName: 'helper.test'
@@ -254,7 +257,6 @@ describe('removeTagsFromOldOnes', () => {
     it('should handle empty tags', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test.[test unit-test jest]',
             dirName: '.',
             tags: ['test', 'unit-test', 'jest'],
             normalizedBaseName: 'helper.test'
@@ -270,7 +272,6 @@ describe('getNewFileName', () => {
     it('should should add all tags to the file name', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test',
             dirName: '.',
             tags: ['test', 'unit-test', 'jest'],
             normalizedBaseName: 'helper.test'
@@ -283,7 +284,6 @@ describe('getNewFileName', () => {
     it('should leave the file name untouched when no tags exist', () => {
         const fileInfo = {
             extName: '.js',
-            baseName: 'helper.test',
             dirName: '.',
             tags: [],
             normalizedBaseName: 'helper.test'

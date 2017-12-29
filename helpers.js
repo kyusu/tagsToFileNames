@@ -32,7 +32,6 @@ const Right = Either.Right;
 /**
  * @typedef {Object} EnhancedFileInfo
  * @property {string} extName
- * @property {string} baseName
  * @property {string} dirName
  * @property {Tags} tags
  * @property {string} normalizedBaseName
@@ -97,6 +96,23 @@ const getTags = fileInfo => {
 const getConcatenatedTags = tags => `.[${tags.join(' ')}]`;
 
 /**
+ * @type {Function}
+ */
+const assocNormalizedBaseName = R.assoc('normalizedBaseName');
+
+/**
+ * @type {Function}
+ */
+const removeBaseName = R.dissoc('baseName');
+
+/**
+ * @type {Function}
+ * @param {FileInfoWithTags} fileInfo
+ * @return {EnhancedFileInfo}
+ */
+const updateBaseNameProps = R.compose(removeBaseName, assocNormalizedBaseName);
+
+/**
  * Returns an object which contains extension and base name, tags as well as the base name of the file without the tags
  * @nosideeffects
  * @param {FileInfoWithTags} fileInfo
@@ -104,7 +120,7 @@ const getConcatenatedTags = tags => `.[${tags.join(' ')}]`;
  */
 const normalizeBaseName = fileInfo => {
     const normalizedBaseName = fileInfo.baseName.replace(getConcatenatedTags(fileInfo.tags), '');
-    return Object.assign({normalizedBaseName: normalizedBaseName}, fileInfo);
+    return updateBaseNameProps(normalizedBaseName, fileInfo);
 };
 
 /**
