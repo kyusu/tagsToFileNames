@@ -2,7 +2,11 @@ const {
     getExtAndBaseName,
     getTags,
     getConcatenatedTags,
-    normalizeBaseName
+    normalizeBaseName,
+    addNewTagsToOldOnes,
+    removeTagsFromOldOnes,
+    getNewFileName,
+    containsTags
 } = require('./helpers');
 
 /**
@@ -179,5 +183,139 @@ describe('normalizedBaseName', () => {
         const result = normalizeBaseName(fileInfo);
         checkFileInfoResult(fileInfo, result);
         expect(result.normalizedBaseName).toEqual(fileInfo.baseName);
+    });
+});
+
+describe('addNewTagsToOldOne', () => {
+    it('should merge new and old tags', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test.[test unit-test jest]',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest'],
+            normalizedBaseName: 'helper.test'
+        };
+        const newTags = ['test', 'unit-testing', 'mocking'];
+        const result = addNewTagsToOldOnes(newTags, fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.tags).toEqual(['test', 'unit-test', 'jest', 'unit-testing', 'mocking']);
+    });
+
+    it('should new tags to a file which has none', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test',
+            dirName: '.',
+            tags: [],
+            normalizedBaseName: 'helper.test'
+        };
+        const newTags = ['test', 'unit-test', 'jest'];
+        const result = addNewTagsToOldOnes(newTags, fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.tags).toEqual(newTags);
+    });
+
+    it('should handle empty new tags', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test.[test unit-test jest]',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest'],
+            normalizedBaseName: 'helper.test'
+        };
+        const newTags = [];
+        const result = addNewTagsToOldOnes(newTags, fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.tags).toEqual(fileInfo.tags);
+    });
+});
+
+describe('removeTagsFromOldOnes', () => {
+    it('should remove the given tags', () => {
+        const  fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test.[test unit-test jest]',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest'],
+            normalizedBaseName: 'helper.test'
+        };
+        const tagsToBeRemoved = ['test', 'jest'];
+        const result = removeTagsFromOldOnes(tagsToBeRemoved, fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.tags).toEqual(['unit-test']);
+    });
+
+    it('should handle removing non-existing tags', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test.[test unit-test jest]',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest'],
+            normalizedBaseName: 'helper.test'
+        };
+        const tagsToBeRemoved = ['tape', 'mocha'];
+        const result = removeTagsFromOldOnes(tagsToBeRemoved, fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.tags).toEqual(fileInfo.tags);
+    });
+
+    it('should handle empty tags', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test.[test unit-test jest]',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest'],
+            normalizedBaseName: 'helper.test'
+        };
+        const tagsToBeRemoved = [];
+        const result = removeTagsFromOldOnes(tagsToBeRemoved, fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.tags).toEqual(fileInfo.tags);
+    });
+});
+
+describe('getNewFileName', () => {
+    it('should should add all tags to the file name', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest'],
+            normalizedBaseName: 'helper.test'
+        };
+        const result = getNewFileName(fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.newBaseName).toEqual('helper.test.[test unit-test jest]');
+    });
+
+    it('should leave the file name untouched when no tags exist', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test',
+            dirName: '.',
+            tags: [],
+            normalizedBaseName: 'helper.test'
+        };
+        const result = getNewFileName(fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.newBaseName).toEqual(fileInfo.normalizedBaseName);
+    });
+});
+
+describe('containsTags', () => {
+    it('should return false given to different list of tags', () => {
+        const filterTags = ['test', 'unit-test', 'mocks'];
+        const fileTags = ['jest', 'tape', 'mocha'];
+        expect(containsTags(filterTags, fileTags)).toEqual(false);
+    });
+
+    it('should return true given a list which contains tags from the other list', () => {
+        const filterTags = ['mocks', 'jest'];
+        const fileTags = ['unit-test', 'test', 'jest', 'mocks'];
+        expect(containsTags(filterTags, fileTags)).toEqual(true);
+    });
+
+    it('should return true given two empty list of tags', () => {
+        expect(containsTags([], [])).toEqual(true);
     });
 });

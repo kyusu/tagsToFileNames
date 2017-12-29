@@ -233,6 +233,7 @@ const changeFileTags = (changeFunc, fileName) => {
 
 /**
  * Whether the given tag array of the file contains all tags from the filter array
+ * @nosideeffects
  * @param {Tags} filterTags
  * @param {Tags} fileTags
  * @returns {boolean}
@@ -256,12 +257,14 @@ const fileSatisfiesFilter = (filterTags, fileName) => {
 };
 
 module.exports = {
-    addNewTagsToOldOnes: addNewTagsToOldOnes,
-    removeTagsFromOldOnes: removeTagsFromOldOnes,
-    changeFileTags: changeFileTags,
-    fileSatisfiesFilter: fileSatisfiesFilter,
+    addNewTagsToOldOnes,
+    removeTagsFromOldOnes,
+    changeFileTags,
+    fileSatisfiesFilter,
     getExtAndBaseName,
     getTags,
     getConcatenatedTags,
-    normalizeBaseName
+    normalizeBaseName,
+    getNewFileName,
+    containsTags
 };
