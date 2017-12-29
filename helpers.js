@@ -1,4 +1,3 @@
-'use strict';
 const R = require('ramda');
 const junk = require('junk');
 const path = require('path');
@@ -87,11 +86,8 @@ const assocTags = R.assoc('tags');
  * @returns {FileInfoWithTags}
  */
 const getTags = fileInfo => {
-    let tags = [];
     const matches = fileInfo.baseName.match(/\.\[(.+)]$/);
-    if (matches) {
-        tags = removeEmptyTags(matches[1].replace('.[', '').replace('].', '').split(' '));
-    }
+    const tags = matches ? removeEmptyTags(matches[1].replace('.[', '').replace('].', '').split(' ')) : [];
     return assocTags(tags, fileInfo);
 };
 
@@ -324,7 +320,7 @@ const viewTags = R.view(R.lensProp('tags'));
  */
 const fileSatisfiesFilter = (filterTags, fileName) => getFileInfo(fileName)
     .map(viewTags)
-    .map(containsTags.bind(null, filterTags))
+    .map(R.partial(containsTags, [filterTags]))
     .getOrElse(false);
 
 module.exports = {

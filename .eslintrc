@@ -1,0 +1,14 @@
+{
+    "extends": "cleanjs",
+    "rules": {
+        "import/no-commonjs": [
+            0
+        ],
+        "fp/no-mutation": [
+            "error",
+            {
+                "commonjs": true
+            }
+        ]
+    }
+}
