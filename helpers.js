@@ -65,6 +65,14 @@ const getExtAndBaseName = fileName => {
 };
 
 /**
+ * Given a list of string it returns a new list from which all empty strings have been removed
+ * @type {Function}
+ * @param {Array.<string>}
+ * @return {Array.<string>}
+ */
+const removeEmptyTags = R.reject(R.isEmpty);
+
+/**
  * Returns an object which contains file information as well as all the tags stored in the file
  * name
  * @nosideeffects
@@ -75,7 +83,7 @@ const getTags = fileInfo => {
     let tags = [];
     const matches = fileInfo.baseName.match(/\.\[(.+)]$/);
     if (matches) {
-        tags = matches[1].replace('.[', '').replace('].', '').split(' ');
+        tags = removeEmptyTags(matches[1].replace('.[', '').replace('].', '').split(' '));
     }
     return Object.assign({tags: tags}, fileInfo);
 };
