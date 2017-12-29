@@ -105,9 +105,7 @@ const normalizeBaseName = fileInfo => {
  * @param {string} fileName
  * @returns {{stat: Object, fileName: string}}
  */
-const getFileAndStat = (stat, fileName) => {
-    return {stat: stat, fileName: fileName};
-};
+const getFileAndStat = (stat, fileName) => ({stat, fileName});
 
 /**
  * Returns either a Just containing the file info object (if it is a file) or a Nothing (if it actually is a directory)
@@ -264,5 +262,6 @@ module.exports = {
     fileSatisfiesFilter: fileSatisfiesFilter,
     getExtAndBaseName,
     getTags,
-    getConcatenatedTags
+    getConcatenatedTags,
+    normalizeBaseName
 };

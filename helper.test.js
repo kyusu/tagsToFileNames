@@ -1,7 +1,8 @@
 const {
     getExtAndBaseName,
     getTags,
-    getConcatenatedTags
+    getConcatenatedTags,
+    normalizeBaseName
 } = require('./helpers');
 
 /**
@@ -140,5 +141,43 @@ describe('getConcatenatedTags', () => {
     it('should not crash when given a null', () => {
         const result = getConcatenatedTags(null);
         expect(result).toEqual('.[]');
+    });
+});
+
+describe('normalizedBaseName', () => {
+    it('should strips away the tags given a file with tags', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test.[test unit-test jest]',
+            dirName: '.',
+            tags: ['test', 'unit-test', 'jest']
+        };
+        const result = normalizeBaseName(fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.normalizedBaseName).toEqual('helper.test');
+    });
+
+    it('should handle files without tags', () => {
+        const fileInfo = {
+            extName: '.js',
+            baseName: 'helper.test',
+            dirName: '.',
+            tags: []
+        };
+        const result = normalizeBaseName(fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.normalizedBaseName).toEqual(fileInfo.baseName);
+    });
+
+    it('should handle empty baseName properties', () => {
+        const fileInfo = {
+            extName: '',
+            baseName: '',
+            dirName: '.',
+            tags: []
+        };
+        const result = normalizeBaseName(fileInfo);
+        checkFileInfoResult(fileInfo, result);
+        expect(result.normalizedBaseName).toEqual(fileInfo.baseName);
     });
 });
