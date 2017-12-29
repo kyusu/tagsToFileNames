@@ -153,20 +153,29 @@ const getFileStat = fileName => {
 const getFileDescription = R.compose(getTags, getExtAndBaseName);
 
 /**
+ * Merge two list of tags
+ * @type {Function}
+ * @param {Tags} existingTags
+ * @param {Tags} newTags
+ * @return {Tags}
+ */
+const mergeTags = R.compose(R.uniq, R.concat);
+
+/**
  * Takes a list of new tags and merges them with the tags which are already present on this file
- * @param {tags} newTags
+ * @param {Tags} newTags
  * @param {EnhancedFileInfo} fileInfo
  * @returns {EnhancedFileInfo}
  */
 const addNewTagsToOldOnes = (newTags, fileInfo) => {
-    const tags = R.uniq(R.concat(fileInfo.tags, newTags));
+    const tags = mergeTags(fileInfo.tags, newTags);
     return Object.assign({}, fileInfo, {tags: tags});
 };
 
 /**
  * Takes a list of tags which have to removed and returns a file info object which no longer contains these tags in
  * it's tags property
- * @param {tags} tagsToBeRemoved
+ * @param {Tags} tagsToBeRemoved
  * @param {EnhancedFileInfo} fileInfo
  * @returns {EnhancedFileInfo}
  */

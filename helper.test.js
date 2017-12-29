@@ -51,10 +51,6 @@ describe('getExtAndBaseName', () => {
         checkFileInfoResult(expectedResult, result);
     });
 
-    it('should not crash given a null', () => {
-        getExtAndBaseName(null);
-    });
-
     it('should return a record given a file name with tags', () => {
         const result = getExtAndBaseName('helper.test.[test unit-test jest].js');
         const expectedResult = {
@@ -140,10 +136,6 @@ describe('getConcatenatedTags', () => {
 
     it('should handle an empty array of tags', () => {
         const result = getConcatenatedTags([]);
-        expect(result).toEqual('.[]');
-    });
-    it('should not crash when given a null', () => {
-        const result = getConcatenatedTags(null);
         expect(result).toEqual('.[]');
     });
 });
