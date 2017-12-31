@@ -14,6 +14,12 @@ const Right = Either.Right;
  */
 
 /**
+ * @typedef {Object} FileStats
+ * @property {fs.Stats} stat
+ * @property {string} fileName
+ */
+
+/**
  * @typedef {Object} FileInfo
  * @property {string} extName
  * @property {string} baseName
@@ -31,6 +37,7 @@ const Right = Either.Right;
 /**
  * @typedef {Object} EnhancedFileInfo
  * @property {string} extName
+ * @property {string} baseName
  * @property {string} dirName
  * @property {Tags} tags
  * @property {string} normalizedBaseName
@@ -105,19 +112,6 @@ const getConcatenatedTags = tags => `.[${tags.join(' ')}]`;
 const assocNormalizedBaseName = R.assoc('normalizedBaseName');
 
 /**
- * @type {Function}
- */
-const removeBaseName = R.dissoc('baseName');
-
-/**
- * @type {Function}
- * @param {String} normalizedBaseName
- * @param {FileInfoWithTags} fileInfo
- * @return {EnhancedFileInfo}
- */
-const updateBaseNameProps = R.compose(removeBaseName, assocNormalizedBaseName);
-
-/**
  * Returns an object which contains extension and base name, tags as well as the base name of the file without the tags
  * @nosideeffects
  * @param {FileInfoWithTags} fileInfo
@@ -125,21 +119,13 @@ const updateBaseNameProps = R.compose(removeBaseName, assocNormalizedBaseName);
  */
 const normalizeBaseName = fileInfo => {
     const normalizedBaseName = fileInfo.baseName.replace(getConcatenatedTags(fileInfo.tags), '');
-    return updateBaseNameProps(normalizedBaseName, fileInfo);
+    return assocNormalizedBaseName(normalizedBaseName, fileInfo);
 };
 
 /**
- * Returns an object which contains both the stat object of the file in question as well as the file name
- * @param {Object} stat
- * @param {string} fileName
- * @returns {{stat: Object, fileName: string}}
- */
-const getFileAndStat = (stat, fileName) => ({stat, fileName});
-
-/**
  * Returns either a Just containing the file info object (if it is a file) or a Nothing (if it actually is a directory)
- * @param {{stat: Object, fileName: string}} fileInfo
- * @returns {Just.<{stat: Object, fileName: string}>|Nothing}
+ * @param {FileStats} fileInfo
+ * @returns {Just.<FileStats>|Nothing}
  */
 const filterOutDirectory = fileInfo => fileInfo.stat.isFile() ? Just(fileInfo) : Nothing();
 
@@ -154,7 +140,7 @@ const filterOutJunkFile = fileName => junk.not(path.basename(fileName)) ? Just(f
  * Returns either a Just contain the file info object (if the stat object could be determined) or a Nothing (if the
  * stat operation has failed)
  * @param {string} fileName
- * @returns {Just.<{fileName: string, stat: object}>|Nothing}
+ * @returns {Just.<FileStats>|Nothing}
  */
 const getFileStat = fileName => {
     let stat;
@@ -163,7 +149,7 @@ const getFileStat = fileName => {
     } catch (e) {
         return Nothing();
     }
-    return Just(getFileAndStat(stat, fileName));
+    return Just({stat, fileName});
 };
 
 /**
@@ -256,7 +242,7 @@ const renameFileOnFilesystem = fileInfo => {
 /**
  * @type {Function}
  * @nosideeffects
- * @param {{stat: object, fileName: string}} file
+ * @param {FileStats} file
  * @return {string}
  */
 const viewFileName = R.view(R.lensProp('fileName'));
@@ -333,5 +319,7 @@ module.exports = {
     getConcatenatedTags,
     normalizeBaseName,
     getNewFileName,
-    containsTags
+    containsTags,
+    getFileStat,
+    renameFileOnFilesystem
 };

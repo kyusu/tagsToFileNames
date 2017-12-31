@@ -4,4 +4,5 @@ tagsToFileNames-add
 tagsToFileNames-filter
 tagsToFileNames-remove
 coverage/**
+__mocks__/**
 
