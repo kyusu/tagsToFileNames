@@ -1,4 +1,6 @@
-# tagsToFileNames
+tagsToFileNames
+=====
+[![Build Status](https://travis-ci.org/kyusu/tagsToFileNames.svg?branch=master)](https://travis-ci.org/kyusu/tagsToFileNames)
 A simple shell script which adds/removes the given tags to/from the file names of all files which are piped into 
 the script.
 
