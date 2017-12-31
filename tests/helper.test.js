@@ -14,7 +14,7 @@ const {
     getFileStat,
     renameFileOnFilesystem,
     fileSatisfiesFilter
-} = require('./helpers');
+} = require('../helpers');
 
 jest.mock('fs');
 
