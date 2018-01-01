@@ -21,7 +21,6 @@
   "homepage": "https://github.com/kyusu/addTagsToFileNames",
   "dependencies": {
     "commander": "^2.12.2",
-    "daggy": "^1.2.0",
     "junk": "^2.1.0",
     "lazylines": "^1.0.0",
     "ramda": "^0.25.0",

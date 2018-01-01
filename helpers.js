@@ -149,7 +149,10 @@ const getFileStat = fileName => {
     } catch (e) {
         return Nothing();
     }
-    return Just({stat, fileName});
+    return Just({
+        stat,
+        fileName
+    });
 };
 
 /**
@@ -264,21 +267,24 @@ const getFileInfo = fileName => filterOutJunkFile(fileName)
  * file rename operation on the given file
  * @param {Function} changeFunc
  * @param {string} fileName
+ * @return {string} The resulting message
  */
 const changeFileTags = (changeFunc, fileName) => {
+    let message;
     const fileInfo = getFileInfo(fileName)
         .map(normalizeBaseName)
         .map(changeFunc)
         .map(getNewFileName);
     if (M.isJust(fileInfo)) {
-        Either.either(
-            left => console.log(`tagsToFileNames has failed: ${left} for ${fileName}`),
-            right => console.log(right),
+        message = Either.either(
+            left => `tagsToFileNames has failed: ${left} for ${fileName}`,
+            R.identity,
             renameFileOnFilesystem(fileInfo.getOrElse({}))
         );
     } else {
-        console.log(`${fileName} has not been renamed!`);
+        message = `${fileName} has not been renamed!`;
     }
+    return message;
 };
 
 /**
@@ -321,5 +327,6 @@ module.exports = {
     getNewFileName,
     containsTags,
     getFileStat,
-    renameFileOnFilesystem
+    renameFileOnFilesystem,
+    getFileInfo
 };

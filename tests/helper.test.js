@@ -13,10 +13,20 @@ const {
     containsTags,
     getFileStat,
     renameFileOnFilesystem,
-    fileSatisfiesFilter
+    fileSatisfiesFilter,
+    changeFileTags,
+    getFileInfo
 } = require('../helpers');
 
 jest.mock('fs');
+
+const fileInfoToFileName = fileInfo => `${fileInfo.dirName}${path.sep}${fileInfo.baseName}${fileInfo.extName}`;
+
+const toFileNames = R.map(fileInfoToFileName);
+
+const setupFsRenameSyncMocks = (successFileInfos, failureFileInfos) => () => {
+    require('fs').__setRenameSyncMocks(toFileNames(successFileInfos), toFileNames(failureFileInfos));
+};
 
 /**
  * @param {FileInfo} expectedResult
@@ -325,14 +335,9 @@ describe('getFileStat', () => {
     const dir = 'myDirectory';
     const existingFile = 'myFile.js';
     const nonExistingFile = 'non-existing-file.js';
-    beforeAll(() => {
-        const fs = require('fs');
-        const mock = Object.create(null);
-        mock[dir] = fs.StatSyncReturnType.Directory;
-        mock[existingFile] = fs.StatSyncReturnType.File;
-        mock[nonExistingFile] = fs.StatSyncReturnType.Exception;
-        fs.__setStatSyncMocks(mock);
-    });
+
+    beforeAll(() => require('fs').__setStatSyncMocks([dir], [existingFile], [nonExistingFile]));
+
     it('should return a Just for an existing file', () => {
         const result = getFileStat(existingFile);
         expect(M.isJust(result)).toEqual(true);
@@ -372,13 +377,9 @@ describe('renameFileOnFileSystem', () => {
         normalizeBaseName: 'helper.test',
         newBaseName: 'helper.test.[test jest]'
     };
-    beforeAll(() => {
-        const fs = require('fs');
-        const mock = Object.create(null);
-        mock[`${successFileInfo.dirName}${path.sep}${successFileInfo.baseName}${successFileInfo.extName}`] = fs.RenameSyncResultType.Success;
-        mock[`${failureFileInfo.dirName}${path.sep}${failureFileInfo.baseName}${failureFileInfo.extName}`] = fs.RenameSyncResultType.Failure
-        fs.__setRenameSyncMocks(mock);
-    });
+
+    beforeAll(setupFsRenameSyncMocks([successFileInfo], [failureFileInfo]));
+
     it('should return a Right upon successfully renaming a file', () => {
         const result = renameFileOnFilesystem(successFileInfo);
         expect(E.isRight(result)).toEqual(true);
@@ -394,14 +395,8 @@ describe('fileSatisfiesFilter', () => {
     const dirName = 'myDirectory';
     const existingFile = 'myFile.[test jest unit-test].js';
     const nonexistingFile = 'non-existing-file.[undefined null].js';
-    beforeAll(() => {
-        const fs = require('fs');
-        const mocks = Object.create(null);
-        mocks[dirName] = fs.StatSyncReturnType.Directory;
-        mocks[existingFile] = fs.StatSyncReturnType.File;
-        mocks[nonexistingFile] = fs.StatSyncReturnType.Exception;
-        fs.__setStatSyncMocks(mocks);
-    });
+
+    beforeAll(() => require('fs').__setStatSyncMocks([dirName], [existingFile], [nonexistingFile]));
 
     it('should return true for an existing file with the matching tags', () => {
         const result = fileSatisfiesFilter(['test', 'jest'], existingFile);
@@ -421,5 +416,85 @@ describe('fileSatisfiesFilter', () => {
     it('should return false for a directory', () => {
         const result = fileSatisfiesFilter(['test', 'jest'], dirName);
         expect(result).toEqual(false);
+    });
+});
+
+describe('changeFileTags - add', () => {
+    const dirName = 'myDirectory';
+
+    const addTag = fileName => changeFileTags(R.partial(addNewTagsToOldOnes, [['unit-testing']]), fileName);
+
+    const successFileInfo = {
+        extName: '.js',
+        baseName: 'myFile.[test jest unit-test]',
+        dirName: '.',
+        tags: ['test', 'jest', 'unit-test'],
+        normalizeBaseName: 'myFile'
+    };
+    const failureFileInfo1 = {
+        extName: '.js',
+        baseName: 'non-existing-file.[undefined null]',
+        dirName: '.',
+        tags: ['undefined', 'null'],
+        normalizeBaseName: 'non-existing-file'
+    };
+    const failureFileInfo2 = {
+        extName: '.js',
+        baseName: 'myExistingFile.[undefined null]',
+        dirName: '.',
+        tags: ['undefined', 'null'],
+        normalizeBaseName: 'myExistingFile'
+    };
+    const existingFile1 = fileInfoToFileName(successFileInfo);
+    const existingFile2 = fileInfoToFileName(failureFileInfo2);
+    const nonexistingFile = fileInfoToFileName(failureFileInfo1);
+
+    beforeAll(() => {
+        require('fs').__setStatSyncMocks([dirName], [existingFile1, existingFile2], [nonexistingFile]);
+        setupFsRenameSyncMocks([successFileInfo], [failureFileInfo1, failureFileInfo2])();
+    });
+
+    it('should return a success message for an existing file', () => {
+        const message = addTag(existingFile1);
+        expect(message).toEqual('myFile.[test jest unit-test unit-testing]');
+    });
+
+    it('should return a failure message for a non-existing file', () => {
+        const message = addTag(nonexistingFile);
+        expect(message).toEqual('./non-existing-file.[undefined null].js has not been renamed!');
+    });
+
+    it('should returan a failure message when renaming an existing files fails', () => {
+        const message = addTag(existingFile2);
+        expect(message).toEqual('tagsToFileNames has failed: Error: 💥 for ./myExistingFile.[undefined null].js');
+    });
+});
+
+describe('getFileInfo', () => {
+    const dir = 'myDirectory';
+    const existingFile = 'myFile.js';
+    const junkFile = '.DS_Store';
+    const nonExistingFile = 'non-existing-file.js';
+
+    beforeAll(() => require('fs').__setStatSyncMocks([dir], [existingFile, junkFile], [nonExistingFile]));
+
+    it('should return a Just for an existing file', () => {
+        const result = getFileInfo(existingFile);
+        expect(M.isJust(result)).toBe(true);
+    });
+
+    it('should return a Nothing for a directory', () => {
+       const result = getFileInfo(dir);
+       expect(M.isNothing(result)).toEqual(true);
+    });
+
+    it('should return a Nothing for a non-existing file', () => {
+        const result = getFileInfo(nonExistingFile);
+        expect(M.isNothing(result)).toEqual(true);
+    });
+
+    it('should return a Nothing for a junk file', () => {
+        const result = getFileInfo(junkFile);
+        expect(M.isNothing(result)).toEqual(true);
     });
 });

@@ -12,7 +12,8 @@ const handleInput = changeFileFunc => {
     const inp = new ll.LineReadStream(process.stdin);
     inp.on('line', line => {
         const fileName = ll.chomp(line);
-        helpers.changeFileTags(R.partial(changeFileFunc, [tagsToBeAdded]), fileName);
+        const message = helpers.changeFileTags(R.partial(changeFileFunc, [tagsToBeAdded]), fileName);
+        console.log(message);
     });
 };
 
