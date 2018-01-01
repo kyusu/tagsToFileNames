@@ -1,15 +1,5 @@
 #!/usr/bin/env node
-const program = require('commander');
-const ll = require('lazylines');
-const helpers = require('./helpers.js');
+const {removeTagsFromOldOnes} = require('./helpers.js');
+const inputHandler = require('./inputHandler');
 
-program.parse(process.argv);
-const tagsToBeRemoved = program.args[0].split(',').map(tag => tag.trim());
-
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
-const inp = new ll.LineReadStream(process.stdin);
-inp.on('line', (line) => {
-    const fileName = ll.chomp(line);
-    helpers.changeFileTags(helpers.removeTagsFromOldOnes.bind(null, tagsToBeRemoved), fileName);
-});
+inputHandler(removeTagsFromOldOnes);

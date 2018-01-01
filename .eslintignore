@@ -1,8 +1,6 @@
-helper.test.js
+tests/**
 tagsToFileNames.js
 tagsToFileNames-add
 tagsToFileNames-filter
 tagsToFileNames-remove
 coverage/**
-__mocks__/**
-
