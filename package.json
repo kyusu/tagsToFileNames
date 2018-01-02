@@ -4,7 +4,7 @@
   "description": "Adds/removes the given tags to/from the file names in the given directory",
   "main": "tagsToFileNames.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "ramda-fantasy": "^0.7.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "jest": "^22.0.4"
   }
 }
