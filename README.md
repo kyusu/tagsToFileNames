@@ -9,7 +9,7 @@ tagsToFileNames
 A simple shell script which adds/removes the given tags to/from the file names of all files which are piped into 
 the script.
 
-The concept of tags contained in the file names itself is heavily inspired by [TagSpaces](https://www.tagspaces.org/).
+The concept of tags contained in the file names itself is heavily inspired by [TagSpaces](https://docs.tagspaces.org/tagging#file-tagging-based-on-filename).
 
 ## Install
 
