@@ -41,3 +41,6 @@ jspm_packages
 
 # MacOS X
 .DS_Store
+
+# Coveralls.io
+.coveralls.yml
