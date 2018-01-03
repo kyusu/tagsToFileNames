@@ -2,10 +2,10 @@ const R = require('ramda');
 const junk = require('junk');
 const path = require('path');
 const fs = require('fs');
-const M = require('ramda-fantasy').Maybe;
-const Just = M.Just;
-const Nothing = M.Nothing;
-const Either = require('ramda-fantasy').Either;
+const Maybe = require('crocks/Maybe');
+const Just = Maybe.Just;
+const Nothing = Maybe.Nothing;
+const Either = require('crocks/Either');
 const Left = Either.Left;
 const Right = Either.Right;
 
@@ -262,6 +262,11 @@ const getFileInfo = fileName => filterOutJunkFile(fileName)
     .map(viewFileName)
     .map(getFileDescription);
 
+const tryFileRenaming = fileName => value => renameFileOnFilesystem(value).either(
+    left => `tagsToFileNames has failed: ${left} for ${fileName}`,
+    R.identity
+);
+
 /**
  * Takes a file name and a function which either adds or removes tags from the given file name and performs a
  * file rename operation on the given file
@@ -270,21 +275,11 @@ const getFileInfo = fileName => filterOutJunkFile(fileName)
  * @return {string} The resulting message
  */
 const changeFileTags = (changeFunc, fileName) => {
-    let message;
     const fileInfo = getFileInfo(fileName)
         .map(normalizeBaseName)
         .map(changeFunc)
         .map(getNewFileName);
-    if (M.isJust(fileInfo)) {
-        message = Either.either(
-            left => `tagsToFileNames has failed: ${left} for ${fileName}`,
-            R.identity,
-            renameFileOnFilesystem(fileInfo.getOrElse({}))
-        );
-    } else {
-        message = `${fileName} has not been renamed!`;
-    }
-    return message;
+    return fileInfo.either(() => `${fileName} has not been renamed!`, tryFileRenaming(fileName));
 };
 
 /**
@@ -313,7 +308,7 @@ const viewTags = R.view(R.lensProp('tags'));
 const fileSatisfiesFilter = (filterTags, fileName) => getFileInfo(fileName)
     .map(viewTags)
     .map(R.partial(containsTags, [filterTags]))
-    .getOrElse(false);
+    .either(R.always(false), R.identity);
 
 module.exports = {
     addNewTagsToOldOnes,

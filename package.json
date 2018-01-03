@@ -23,10 +23,10 @@
   "homepage": "https://github.com/kyusu/addTagsToFileNames",
   "dependencies": {
     "commander": "^2.12.2",
+    "crocks": "^0.8.2",
     "junk": "^2.1.0",
     "lazylines": "^1.0.0",
-    "ramda": "^0.25.0",
-    "ramda-fantasy": "^0.7.0"
+    "ramda": "^0.25.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",

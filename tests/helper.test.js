@@ -1,7 +1,5 @@
 const path = require('path');
 const R = require('ramda');
-const M = require('ramda-fantasy').Maybe;
-const E = require('ramda-fantasy').Either;
 const {
     getExtAndBaseName,
     getTags,
@@ -19,6 +17,14 @@ const {
 } = require('../helpers');
 
 jest.mock('fs');
+
+/**
+ * @param {Maybe} m
+ * @return {boolean}
+ */
+const isJust = m => m.either(() => false, () => true);
+
+const isRight = isJust;
 
 const fileInfoToFileName = fileInfo => `${fileInfo.dirName}${path.sep}${fileInfo.baseName}${fileInfo.extName}`;
 
@@ -340,23 +346,23 @@ describe('getFileStat', () => {
 
     it('should return a Just for an existing file', () => {
         const result = getFileStat(existingFile);
-        expect(M.isJust(result)).toEqual(true);
-        const unwrappedResult = result.getOrElse({});
+        expect(isJust(result)).toEqual(true);
+        const unwrappedResult = result.option(1);
         expect(unwrappedResult.fileName).toEqual(existingFile);
         expect(unwrappedResult.stat).toBeDefined();
     });
 
     it('should return a Just for an existing directory', () => {
         const result = getFileStat(dir);
-        expect(M.isJust(result)).toEqual(true);
-        const unwrappedResult = result.getOrElse({});
+        expect(isJust(result)).toEqual(true);
+        const unwrappedResult = result.option(1);
         expect(unwrappedResult.fileName).toEqual(dir);
         expect(unwrappedResult.stat).toBeDefined();
     });
 
     it('should return a Nothing for an non-existing file', () => {
         const result = getFileStat(nonExistingFile);
-        expect(M.isNothing(result)).toEqual(true);
+        expect(isJust(result)).toEqual(false);
     });
 });
 
@@ -382,12 +388,12 @@ describe('renameFileOnFileSystem', () => {
 
     it('should return a Right upon successfully renaming a file', () => {
         const result = renameFileOnFilesystem(successFileInfo);
-        expect(E.isRight(result)).toEqual(true);
+        expect(isRight(result)).toEqual(true);
     });
 
     it('should return a Left upon failing to rename a file ', () => {
         const result = renameFileOnFilesystem(failureFileInfo);
-        expect(E.isLeft(result)).toEqual(true);
+        expect(isRight(result)).toEqual(false);
     });
 });
 
@@ -480,21 +486,21 @@ describe('getFileInfo', () => {
 
     it('should return a Just for an existing file', () => {
         const result = getFileInfo(existingFile);
-        expect(M.isJust(result)).toBe(true);
+        expect(isJust(result)).toBe(true);
     });
 
     it('should return a Nothing for a directory', () => {
        const result = getFileInfo(dir);
-       expect(M.isNothing(result)).toEqual(true);
+       expect(isJust(result)).toEqual(false);
     });
 
     it('should return a Nothing for a non-existing file', () => {
         const result = getFileInfo(nonExistingFile);
-        expect(M.isNothing(result)).toEqual(true);
+        expect(isJust(result)).toEqual(false);
     });
 
     it('should return a Nothing for a junk file', () => {
         const result = getFileInfo(junkFile);
-        expect(M.isNothing(result)).toEqual(true);
+        expect(isJust(result)).toEqual(false);
     });
 });
