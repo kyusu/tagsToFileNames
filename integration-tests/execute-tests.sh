@@ -96,6 +96,6 @@ else
     echo "✓ Removing tags from all files has passed."
 fi
 
-if [ ! -z "$ADD_ALL" ] || [ ! -z "$ADD_SINGLE" ] || [ ! -z "$FILTER" ] || [ ! -z "$FILTER" ] || [ ! -z "$REMOVE_SINGLE" ] || [ ! -z "$REMOVE_ALL" ]; then
+if [ ! -z "$ADD_ALL" ] || [ ! -z "$ADD_SINGLE" ] || [ ! -z "$FILTER" ] || [ ! -z "$REMOVE_SINGLE" ] || [ ! -z "$REMOVE_ALL" ]; then
   exit 1
 fi
