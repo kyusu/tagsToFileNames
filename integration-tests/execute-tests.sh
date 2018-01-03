@@ -53,6 +53,11 @@ REMOVE_SINGLE="$(diff results/remove-single.txt snapshots/remove-single.txt)"
 REMOVE_ALL="$(diff results/remove-all.txt snapshots/remove-all.txt)"
 echo "##################################"
 
+echo "result/add-all.txt"
+cat results/add-all.txt
+echo "snapshots/add-all.txt"
+cat snapshots/add-all.txt
+
 echo "Cleaning up after the integration test"
 rm -rf results
 rm -rf testing-ground
