@@ -1,0 +1,8 @@
+.
+..
+.DS_Store
+123.[foo bar].txt
+456.[foo bar].jpg
+789.[foo bar].doc
+Thumbs.db
+a-dir
