@@ -1,5 +1,3 @@
 #!/usr/bin/env node
-const {fileSatisfiesFilter} = require('./helpers.js');
-const inputHandler = require('./inputHandler');
-
-inputHandler(fileSatisfiesFilter);
+const {filterTags} = require('./inputHandler');
+filterTags();
