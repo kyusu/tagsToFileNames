@@ -46,11 +46,11 @@ ls -1a > ../results/remove-all.txt
 cd ..
 
 echo "Comparing the results with our snapshots"
-ADD_ALL="$(diff -q results/add-all.txt snapshots/add-all.txt)"
-ADD_SINGLE="$(diff -q results/add-single.txt snapshots/add-single.txt)"
-FILTER="$(diff -q results/filter.txt snapshots/filter.txt)"
-REMOVE_SINGLE="$(diff -q results/remove-single.txt snapshots/remove-single.txt)"
-REMOVE_ALL="$(diff -q results/remove-all.txt snapshots/remove-all.txt)"
+ADD_ALL="$(diff results/add-all.txt snapshots/add-all.txt)"
+ADD_SINGLE="$(diff results/add-single.txt snapshots/add-single.txt)"
+FILTER="$(diff results/filter.txt snapshots/filter.txt)"
+REMOVE_SINGLE="$(diff results/remove-single.txt snapshots/remove-single.txt)"
+REMOVE_ALL="$(diff results/remove-all.txt snapshots/remove-all.txt)"
 echo "##################################"
 
 echo "Cleaning up after the integration test"
@@ -63,30 +63,35 @@ echo "##################################"
 
 if [ ! -z "$ADD_ALL" ]; then
     echo "𐄂 Adding tags to all files has failed!"
+    echo "$ADD_ALL"
 else
     echo "✓ Adding tags to all files has passed."
 fi
 
 if [ ! -z "$ADD_SINGLE" ]; then
     echo "𐄂 Adding tags to a single files has failed!"
+    echo "$ADD_SINGLE"
 else
     echo "✓ Adding tags to a single files has passed."
 fi
 
 if [ ! -z "$FILTER" ]; then
     echo "𐄂 Filtering files based on tags has failed!"
+    echo "$FILTER"
 else
     echo "✓ Filtering files based on tags has passed."
 fi
 
 if [ ! -z "$REMOVE_SINGLE" ]; then
     echo "𐄂 Removing tags from a single file has failed!"
+    echo "$REMOVE_SINGLE"
 else
     echo "✓ Removing tags from a single file has passed."
 fi
 
 if [ ! -z "$REMOVE_ALL" ]; then
     echo "𐄂 Removing tags from all files has failed!"
+    echo "$REMOVE_ALL"
 else
     echo "✓ Removing tags from all files has passed."
 fi
