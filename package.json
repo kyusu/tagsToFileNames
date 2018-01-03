@@ -4,7 +4,9 @@
   "description": "Adds/removes the given tags to/from the file names in the given directory",
   "main": "tagsToFileNames.js",
   "scripts": {
-    "test": "node node_modules/.bin/jest --coverage && ./integration-tests/execute-tests.sh && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "node node_modules/.bin/jest --coverage && ./integration-tests/execute-tests.sh && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "precommit": "npm test",
+    "prepush": "npm test"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
+    "husky": "^0.14.3",
     "jest": "^22.0.4"
   }
 }
