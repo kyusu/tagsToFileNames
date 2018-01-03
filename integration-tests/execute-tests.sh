@@ -20,13 +20,13 @@ ls | node ../../tagsToFileNames-add foo,bar
 echo "##################################"
 echo "Taking a snapshot of the directory"
 echo "##################################"
-ls -1a | sort -k1 > ../results/add-all.txt
+ls -1a | LC_ALL=C sort -k1 > ../results/add-all.txt
 echo "Add tag 'baz' to a single file"
 ls 123.\[foo\ bar\].txt | node ../../tagsToFileNames-add baz
 echo "##################################"
 echo "Taking a snapshot of the directory"
 echo "##################################"
-ls -1a | sort -k1 > ../results/add-single.txt
+ls -1a | LC_ALL=C sort -k1 > ../results/add-single.txt
 echo "Filtering all files for ones tagged with 'baz'"
 ls | node ../../tagsToFileNames-filter baz > ../results/filter.txt
 echo "##################################"
@@ -35,13 +35,13 @@ ls | node ../../tagsToFileNames-remove baz
 echo "##################################"
 echo "Taking a snapshot of the directory"
 echo "##################################"
-ls -1a | sort -k1 > ../results/remove-single.txt
+ls -1a | LC_ALL=C sort -k1 > ../results/remove-single.txt
 echo "Removing tag 'foo' from all files"
 ls | node ../../tagsToFileNames-remove foo
 echo "##################################"
 echo "Taking a snapshot of the directory"
 echo "##################################"
-ls -1a | sort -k1 > ../results/remove-all.txt
+ls -1a | LC_ALL=C sort -k1 > ../results/remove-all.txt
 
 cd ..
 
