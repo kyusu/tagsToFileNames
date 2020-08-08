@@ -4,6 +4,7 @@ tagsToFileNames
 [![Coverage Status](https://coveralls.io/repos/github/kyusu/tagsToFileNames/badge.svg?branch=master)](https://coveralls.io/github/kyusu/tagsToFileNames?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/kyusu/tagstofilenames/badge.svg?targetFile=package.json)](https://snyk.io/test/github/kyusu/tagstofilenames?targetFile=package.json)
 [![dependencies Status](https://david-dm.org/kyusu/tagsToFileNames/status.svg)](https://david-dm.org/kyusu/tagsToFileNames)
+[![devDependencies Status](https://david-dm.org/kyusu/tagsToFileNames/dev-status.svg)](https://david-dm.org/kyusu/tagsToFileNames?type=dev)
 
 
 A simple shell script which adds/removes the given tags to/from the file names of all files which are piped into 
