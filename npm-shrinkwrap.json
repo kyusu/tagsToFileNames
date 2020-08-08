@@ -1149,9 +1149,9 @@
       }
     },
     "crocks": {
-      "version": "0.8.2",
-      "resolved": "https://registry.npmjs.org/crocks/-/crocks-0.8.2.tgz",
-      "integrity": "sha1-uO6RxHoJwEmKZi0ArRcD0NCEDOE="
+      "version": "0.12.4",
+      "resolved": "https://registry.npmjs.org/crocks/-/crocks-0.12.4.tgz",
+      "integrity": "sha512-paln6xJUrR9e/OWMFsyTi4dLyr+q99C5f7PQbGgSDHtwsfW0sCNZvnpHzvniI2dAE0uoBgeIP1Ukmme8Z0HxxA=="
     },
     "cross-spawn": {
       "version": "6.0.5",
