@@ -1,6 +1,7 @@
 tagsToFileNames
 =====
-[![Build Status](https://travis-ci.com/kyusu/tagsToFileNames.svg?branch=master)](https://travis-ci.com/kyusu/tagsToFileNames)[![Maintainability](https://api.codeclimate.com/v1/badges/78490b4abe0a213d5da4/maintainability)](https://codeclimate.com/github/kyusu/tagsToFileNames/maintainability)
+[![Build Status](https://travis-ci.com/kyusu/tagsToFileNames.svg?branch=master)](https://travis-ci.com/kyusu/tagsToFileNames)
+[![Maintainability](https://api.codeclimate.com/v1/badges/78490b4abe0a213d5da4/maintainability)](https://codeclimate.com/github/kyusu/tagsToFileNames/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/kyusu/tagsToFileNames/badge.svg?branch=master)](https://coveralls.io/github/kyusu/tagsToFileNames?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/kyusu/tagstofilenames/badge.svg?targetFile=package.json)](https://snyk.io/test/github/kyusu/tagstofilenames?targetFile=package.json)
 [![dependencies Status](https://david-dm.org/kyusu/tagsToFileNames/status.svg)](https://david-dm.org/kyusu/tagsToFileNames)
