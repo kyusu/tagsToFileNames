@@ -8,6 +8,7 @@ tagsToFileNames
 [![devDependencies Status](https://david-dm.org/kyusu/tagsToFileNames/dev-status.svg)](https://david-dm.org/kyusu/tagsToFileNames?type=dev)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/kyusu/tagsToFileNames/graphs/commit-activity)
 [![GitHub license](https://img.shields.io/github/license/kyusu/tagsToFileNames.svg)](https://github.com/kyusu/tagsToFileNames/blob/master/LICENSE)
+[![DeepScan grade](https://deepscan.io/api/teams/10488/projects/13335/branches/220797/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=10488&pid=13335&bid=220797)
 
 A simple shell script which adds/removes the given tags to/from the file names of all files which are piped into 
 the script.
