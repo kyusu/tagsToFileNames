@@ -4,7 +4,8 @@
   "description": "Adds/removes the given tags to/from the file names in the given directory",
   "main": "tagsToFileNames.js",
   "scripts": {
-    "test": "node node_modules/.bin/jest --coverage && ./integration-tests/execute-tests.sh && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test:unit": "jest --coverage",
+    "test:e2e": "./end-to-end-tests/execute-tests.sh",
     "precommit": "npm test",
     "prepush": "npm test"
   },
@@ -22,15 +23,14 @@
   },
   "homepage": "https://github.com/kyusu/addTagsToFileNames",
   "dependencies": {
-    "commander": "^7.0.0",
-    "crocks": "^0.12.0",
-    "junk": "^3.0.0",
-    "lazylines": "^1.0.0",
-    "ramda": "^0.27.0"
+    "commander": "7.0.0",
+    "crocks": "0.12.0",
+    "junk": "3.0.0",
+    "lazylines": "1.0.0",
+    "ramda": "0.27.0"
   },
   "devDependencies": {
-    "coveralls": "3.1.0",
     "husky": "4.3.8",
-    "jest": "26.6.3"
+    "jest": "27.0.3"
   }
 }

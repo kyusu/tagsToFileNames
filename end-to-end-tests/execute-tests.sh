@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-echo "Setting up the integration test"
-cd integration-tests
+echo "Setting up the end-to-end test"
+cd end-to-end-tests
 mkdir results
 mkdir testing-ground
 cd testing-ground
@@ -53,7 +53,7 @@ REMOVE_SINGLE="$(diff results/remove-single.txt snapshots/remove-single.txt)"
 REMOVE_ALL="$(diff results/remove-all.txt snapshots/remove-all.txt)"
 echo "##################################"
 
-echo "Cleaning up after the integration test"
+echo "Cleaning up after the end-to-end test"
 rm -rf results
 rm -rf testing-ground
 
