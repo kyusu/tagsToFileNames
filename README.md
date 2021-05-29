@@ -1,5 +1,6 @@
 tagsToFileNames
 =====
+[![Node.js CI](https://github.com/kyusu/tagsToFileNames/workflows/Node.js%20CI/badge.svg)](https://github.com/kyusu/tagsToFileNames/actions/workflows/node.js.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/78490b4abe0a213d5da4/maintainability)](https://codeclimate.com/github/kyusu/tagsToFileNames/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/kyusu/tagsToFileNames/badge.svg?branch=master)](https://coveralls.io/github/kyusu/tagsToFileNames?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/kyusu/tagstofilenames/badge.svg?targetFile=package.json)](https://snyk.io/test/github/kyusu/tagstofilenames?targetFile=package.json)
