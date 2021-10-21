@@ -1,11 +1,11 @@
-const R = require('ramda');
-const junk = require('junk');
-const path = require('path');
-const fs = require('fs');
-const Maybe = require('crocks/Maybe');
+const R = require("ramda");
+const junk = require("junk");
+const path = require("path");
+const fs = require("fs");
+const Maybe = require("crocks/Maybe");
 const Just = Maybe.Just;
 const Nothing = Maybe.Nothing;
-const Either = require('crocks/Either');
+const Either = require("crocks/Either");
 const Left = Either.Left;
 const Right = Either.Right;
 
@@ -58,15 +58,15 @@ const Right = Either.Right;
  * @param {string} fileName
  * @returns {FileInfo}
  */
-const getExtAndBaseName = fileName => {
-    const extName = path.extname(fileName);
-    const baseName = path.basename(fileName, extName);
-    const dirName = path.dirname(fileName);
-    return {
-        extName,
-        baseName,
-        dirName
-    };
+const getExtAndBaseName = (fileName) => {
+  const extName = path.extname(fileName);
+  const baseName = path.basename(fileName, extName);
+  const dirName = path.dirname(fileName);
+  return {
+    extName,
+    baseName,
+    dirName,
+  };
 };
 
 /**
@@ -83,7 +83,7 @@ const removeEmptyTags = R.reject(R.isEmpty);
  * @param {FileInfo} fileInfo
  * @return {FileInfoWithTags}
  */
-const assocTags = R.assoc('tags');
+const assocTags = R.assoc("tags");
 
 /**
  * Returns an object which contains file information as well as all the tags stored in the file
@@ -92,10 +92,12 @@ const assocTags = R.assoc('tags');
  * @param {FileInfo} fileInfo
  * @returns {FileInfoWithTags}
  */
-const getTags = fileInfo => {
-    const matches = fileInfo.baseName.match(/\.\[(.+)]$/);
-    const tags = matches ? removeEmptyTags(matches[1].replace('.[', '').replace('].', '').split(' ')) : [];
-    return assocTags(tags, fileInfo);
+const getTags = (fileInfo) => {
+  const matches = fileInfo.baseName.match(/\.\[(.+)]$/);
+  const tags = matches
+    ? removeEmptyTags(matches[1].replace(".[", "").replace("].", "").split(" "))
+    : [];
+  return assocTags(tags, fileInfo);
 };
 
 /**
@@ -104,12 +106,12 @@ const getTags = fileInfo => {
  * @nosideeffects
  * @returns string
  */
-const getConcatenatedTags = tags => `.[${tags.join(' ')}]`;
+const getConcatenatedTags = (tags) => `.[${tags.join(" ")}]`;
 
 /**
  * @type {Function}
  */
-const assocNormalizedBaseName = R.assoc('normalizedBaseName');
+const assocNormalizedBaseName = R.assoc("normalizedBaseName");
 
 /**
  * Returns an object which contains extension and base name, tags as well as the base name of the file without the tags
@@ -117,9 +119,12 @@ const assocNormalizedBaseName = R.assoc('normalizedBaseName');
  * @param {FileInfoWithTags} fileInfo
  * @returns {EnhancedFileInfo}
  */
-const normalizeBaseName = fileInfo => {
-    const normalizedBaseName = fileInfo.baseName.replace(getConcatenatedTags(fileInfo.tags), '');
-    return assocNormalizedBaseName(normalizedBaseName, fileInfo);
+const normalizeBaseName = (fileInfo) => {
+  const normalizedBaseName = fileInfo.baseName.replace(
+    getConcatenatedTags(fileInfo.tags),
+    ""
+  );
+  return assocNormalizedBaseName(normalizedBaseName, fileInfo);
 };
 
 /**
@@ -127,14 +132,16 @@ const normalizeBaseName = fileInfo => {
  * @param {FileStats} fileInfo
  * @returns {Just.<FileStats>|Nothing}
  */
-const filterOutDirectory = fileInfo => fileInfo.stat.isFile() ? Just(fileInfo) : Nothing();
+const filterOutDirectory = (fileInfo) =>
+  fileInfo.stat.isFile() ? Just(fileInfo) : Nothing();
 
 /**
  * Returns either a Just containing the file name (if it not considered a junk file) or a Nothing
  * @param {string} fileName
  * @returns {Just.<string>|Nothing}
  */
-const filterOutJunkFile = fileName => junk.not(path.basename(fileName)) ? Just(fileName) : Nothing();
+const filterOutJunkFile = (fileName) =>
+  junk.not(path.basename(fileName)) ? Just(fileName) : Nothing();
 
 /**
  * Returns either a Just contain the file info object (if the stat object could be determined) or a Nothing (if the
@@ -142,17 +149,17 @@ const filterOutJunkFile = fileName => junk.not(path.basename(fileName)) ? Just(f
  * @param {string} fileName
  * @returns {Just.<FileStats>|Nothing}
  */
-const getFileStat = fileName => {
-    let stat;
-    try {
-        stat = fs.statSync(fileName);
-    } catch (e) {
-        return Nothing();
-    }
-    return Just({
-        stat,
-        fileName
-    });
+const getFileStat = (fileName) => {
+  let stat;
+  try {
+    stat = fs.statSync(fileName);
+  } catch (e) {
+    return Nothing();
+  }
+  return Just({
+    stat,
+    fileName,
+  });
 };
 
 /**
@@ -177,7 +184,7 @@ const mergeTags = R.compose(R.uniq, R.concat);
  * @param {EnhancedFileInfo} fileInfo
  * @return {EnhancedFileInfo}
  */
-const setTags = R.set(R.lensProp('tags'));
+const setTags = R.set(R.lensProp("tags"));
 
 /**
  * Takes a list of new tags and merges them with the tags which are already present on this file
@@ -187,8 +194,8 @@ const setTags = R.set(R.lensProp('tags'));
  * @returns {EnhancedFileInfo}
  */
 const addNewTagsToOldOnes = (newTags, fileInfo) => {
-    const tags = mergeTags(fileInfo.tags, newTags);
-    return setTags(tags, fileInfo);
+  const tags = mergeTags(fileInfo.tags, newTags);
+  return setTags(tags, fileInfo);
 };
 
 /**
@@ -200,8 +207,8 @@ const addNewTagsToOldOnes = (newTags, fileInfo) => {
  * @returns {EnhancedFileInfo}
  */
 const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
-    const tags = R.without(tagsToBeRemoved, fileInfo.tags);
-    return setTags(tags, fileInfo);
+  const tags = R.without(tagsToBeRemoved, fileInfo.tags);
+  return setTags(tags, fileInfo);
 };
 
 /**
@@ -210,7 +217,7 @@ const removeTagsFromOldOnes = (tagsToBeRemoved, fileInfo) => {
  * @param {EnhancedFileInfo} fileInfo
  * @return {RenamedFileInfo}
  */
-const assocNewBaseName = R.assoc('newBaseName');
+const assocNewBaseName = R.assoc("newBaseName");
 
 /**
  * Takes a file info object and returns an object which contains the new base name which includes all tags
@@ -218,10 +225,10 @@ const assocNewBaseName = R.assoc('newBaseName');
  * @param {EnhancedFileInfo} fileInfo
  * @returns {RenamedFileInfo}
  */
-const getNewFileName = fileInfo => {
-    const tags = fileInfo.tags.length ? getConcatenatedTags(fileInfo.tags) : '';
-    const newBaseName = `${fileInfo.normalizedBaseName}${tags}`;
-    return assocNewBaseName(newBaseName, fileInfo);
+const getNewFileName = (fileInfo) => {
+  const tags = fileInfo.tags.length ? getConcatenatedTags(fileInfo.tags) : "";
+  const newBaseName = `${fileInfo.normalizedBaseName}${tags}`;
+  return assocNewBaseName(newBaseName, fileInfo);
 };
 
 /**
@@ -230,16 +237,16 @@ const getNewFileName = fileInfo => {
  * @param {RenamedFileInfo} fileInfo
  * @returns {Left.<Error>|Right.<string>}
  */
-const renameFileOnFilesystem = fileInfo => {
-    try {
-        fs.renameSync(
-            `${fileInfo.dirName}${path.sep}${fileInfo.baseName}${fileInfo.extName}`,
-            `${fileInfo.dirName}${path.sep}${fileInfo.newBaseName}${fileInfo.extName}`
-        );
-    } catch (e) {
-        return Left(e);
-    }
-    return Right(fileInfo.newBaseName);
+const renameFileOnFilesystem = (fileInfo) => {
+  try {
+    fs.renameSync(
+      `${fileInfo.dirName}${path.sep}${fileInfo.baseName}${fileInfo.extName}`,
+      `${fileInfo.dirName}${path.sep}${fileInfo.newBaseName}${fileInfo.extName}`
+    );
+  } catch (e) {
+    return Left(e);
+  }
+  return Right(fileInfo.newBaseName);
 };
 
 /**
@@ -248,7 +255,7 @@ const renameFileOnFilesystem = fileInfo => {
  * @param {FileStats} file
  * @return {string}
  */
-const viewFileName = R.view(R.lensProp('fileName'));
+const viewFileName = R.view(R.lensProp("fileName"));
 
 /**
  * Returns a Just containing the file info object or Nothing if the file is not fit to be processed (it is a directory,
@@ -256,16 +263,18 @@ const viewFileName = R.view(R.lensProp('fileName'));
  * @param {string} fileName
  * @returns {Just.<{FileInfoWithTags}>|Nothing}
  */
-const getFileInfo = fileName => filterOutJunkFile(fileName)
+const getFileInfo = (fileName) =>
+  filterOutJunkFile(fileName)
     .chain(getFileStat)
     .chain(filterOutDirectory)
     .map(viewFileName)
     .map(getFileDescription);
 
-const tryFileRenaming = fileName => value => renameFileOnFilesystem(value).either(
-    left => `tagsToFileNames has failed: ${left} for ${fileName}`,
+const tryFileRenaming = (fileName) => (value) =>
+  renameFileOnFilesystem(value).either(
+    (left) => `tagsToFileNames has failed: ${left} for ${fileName}`,
     R.identity
-);
+  );
 
 /**
  * Takes a file name and a function which either adds or removes tags from the given file name and performs a
@@ -275,11 +284,14 @@ const tryFileRenaming = fileName => value => renameFileOnFilesystem(value).eithe
  * @return {string} The resulting message
  */
 const changeFileTags = (changeFunc, fileName) => {
-    const fileInfo = getFileInfo(fileName)
-        .map(normalizeBaseName)
-        .map(changeFunc)
-        .map(getNewFileName);
-    return fileInfo.either(() => `${fileName} has not been renamed!`, tryFileRenaming(fileName));
+  const fileInfo = getFileInfo(fileName)
+    .map(normalizeBaseName)
+    .map(changeFunc)
+    .map(getNewFileName);
+  return fileInfo.either(
+    () => `${fileName} has not been renamed!`,
+    tryFileRenaming(fileName)
+  );
 };
 
 /**
@@ -289,8 +301,8 @@ const changeFileTags = (changeFunc, fileName) => {
  * @param {Tags} fileTags
  * @returns {boolean}
  */
-const containsTags = (filterTags, fileTags) => R.reduce((acc, tag) => acc && fileTags.indexOf(tag) !== -1, true,
-    filterTags);
+const containsTags = (filterTags, fileTags) =>
+  R.reduce((acc, tag) => acc && fileTags.indexOf(tag) !== -1, true, filterTags);
 
 /**
  * @type {Function}
@@ -298,30 +310,31 @@ const containsTags = (filterTags, fileTags) => R.reduce((acc, tag) => acc && fil
  * @param {FileInfoWithTags} fileInfo
  * @return {Tags}
  */
-const viewTags = R.view(R.lensProp('tags'));
+const viewTags = R.view(R.lensProp("tags"));
 
 /**
  * Returns whether the given file contains the given tags or not
  * @param {Tags} filterTags An array of tags which have be contained in file
  * @param {string} fileName The name of the file which is tested
  */
-const fileSatisfiesFilter = (filterTags, fileName) => getFileInfo(fileName)
+const fileSatisfiesFilter = (filterTags, fileName) =>
+  getFileInfo(fileName)
     .map(viewTags)
     .map(R.partial(containsTags, [filterTags]))
     .either(R.always(false), R.identity);
 
 module.exports = {
-    addNewTagsToOldOnes,
-    removeTagsFromOldOnes,
-    changeFileTags,
-    fileSatisfiesFilter,
-    getExtAndBaseName,
-    getTags,
-    getConcatenatedTags,
-    normalizeBaseName,
-    getNewFileName,
-    containsTags,
-    getFileStat,
-    renameFileOnFilesystem,
-    getFileInfo
+  addNewTagsToOldOnes,
+  removeTagsFromOldOnes,
+  changeFileTags,
+  fileSatisfiesFilter,
+  getExtAndBaseName,
+  getTags,
+  getConcatenatedTags,
+  normalizeBaseName,
+  getNewFileName,
+  containsTags,
+  getFileStat,
+  renameFileOnFilesystem,
+  getFileInfo,
 };
