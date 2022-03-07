@@ -1,13 +1,13 @@
-const R = require('ramda');
+const R = require("ramda");
 
-const fs = jest.genMockFromModule('fs');
+const fs = jest.genMockFromModule("fs");
 
 let statSyncMocks;
 
-const isFileFunc = () => ({isFile: R.always(true)});
-const isDirectory = () => ({isFile: R.always(false)});
+const isFileFunc = () => ({ isFile: R.always(true) });
+const isDirectory = () => ({ isFile: R.always(false) });
 const isException = () => {
-    throw new Error('💥');
+  throw new Error("💥");
 };
 
 /**
@@ -17,8 +17,8 @@ const isException = () => {
  * @return {Object.<string, function>}
  */
 const mockReducer = (mockFn, mock, name) => {
-    mock[name] = mockFn;
-    return mock;
+  mock[name] = mockFn;
+  return mock;
 };
 
 /**
@@ -28,10 +28,22 @@ const mockReducer = (mockFn, mock, name) => {
  * @private
  */
 const __setStatSyncMocks = (dirs, existingFiles, nonExistingFiles) => {
-    const dirMock = R.reduce(R.partial(mockReducer, [isDirectory]), Object.create(null), dirs);
-    const fileMock = R.reduce(R.partial(mockReducer, [isFileFunc]), Object.create(null), existingFiles);
-    const nonExistingMock = R.reduce(R.partial(mockReducer, [isException]), Object.create(null), nonExistingFiles);
-    statSyncMocks = R.mergeAll([dirMock, fileMock, nonExistingMock]);
+  const dirMock = R.reduce(
+    R.partial(mockReducer, [isDirectory]),
+    Object.create(null),
+    dirs
+  );
+  const fileMock = R.reduce(
+    R.partial(mockReducer, [isFileFunc]),
+    Object.create(null),
+    existingFiles
+  );
+  const nonExistingMock = R.reduce(
+    R.partial(mockReducer, [isException]),
+    Object.create(null),
+    nonExistingFiles
+  );
+  statSyncMocks = R.mergeAll([dirMock, fileMock, nonExistingMock]);
 };
 
 let renameSyncMocks;
@@ -42,14 +54,22 @@ let renameSyncMocks;
  * @private
  */
 const __setRenameSyncMocks = (successFileNames, failureFileNames) => {
-    const successMocks = R.reduce(R.partial(mockReducer, [R.identity]), Object.create(null), successFileNames);
-    const failureMocks = R.reduce(R.partial(mockReducer, [isException]), Object.create(null), failureFileNames);
-    renameSyncMocks = R.mergeAll([successMocks, failureMocks]);
+  const successMocks = R.reduce(
+    R.partial(mockReducer, [R.identity]),
+    Object.create(null),
+    successFileNames
+  );
+  const failureMocks = R.reduce(
+    R.partial(mockReducer, [isException]),
+    Object.create(null),
+    failureFileNames
+  );
+  renameSyncMocks = R.mergeAll([successMocks, failureMocks]);
 };
 
 fs.__setStatSyncMocks = __setStatSyncMocks;
 fs.__setRenameSyncMocks = __setRenameSyncMocks;
-fs.statSync = fileName => statSyncMocks[fileName]();
-fs.renameSync = oldPath => renameSyncMocks[oldPath]();
+fs.statSync = (fileName) => statSyncMocks[fileName]();
+fs.renameSync = (oldPath) => renameSyncMocks[oldPath]();
 
 module.exports = fs;

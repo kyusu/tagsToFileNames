@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const {addNewTagsToOldOnes} = require('./helpers');
-const {changeTags} = require('./inputHandler');
+const { addNewTagsToOldOnes } = require("./helpers");
+const { changeTags } = require("./inputHandler");
 
 changeTags(addNewTagsToOldOnes);
