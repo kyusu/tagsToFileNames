@@ -30,7 +30,7 @@
     "ramda": "0.32.0"
   },
   "devDependencies": {
-    "husky": "7.0.4",
+    "husky": "9.1.7",
     "jest": "27.5.1",
     "prettier": "2.8.8"
   }
